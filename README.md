@@ -130,10 +130,6 @@ cd JSONPlaceholder-API-Testing
 如有问题或建议，请通过以下方式联系：
 - 邮箱: alam77777@qq.com
 
-## 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
-
 ## 致谢
 
 - [JSONPlaceholder](https://jsonplaceholder.typicode.com/) - 提供免费的在线 REST API
