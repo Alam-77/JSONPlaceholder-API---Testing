@@ -1,0 +1,2493 @@
+{
+	"info": {
+		"name": "JSONPlaceholder API 专项测试",
+		"description": "JSONPlaceholder 全量接口测试集合。每个请求包含 4 类断言：状态码校验、响应结构校验、数据类型校验、字段值校验。",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://jsonplaceholder.typicode.com"
+		}
+	],
+	"item": [
+		{
+			"name": "Posts",
+			"description": "文章接口测试",
+			"item": [
+				{
+					"name": "TC-POST-001 获取全部文章",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/posts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验 - 必要字段存在性",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    data.slice(0, 5).forEach(function (item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('title');",
+									"        pm.expect(item).to.have.property('body');",
+									"        pm.expect(item).to.have.property('userId');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(100);",
+									"    const item = data[0];",
+									"    pm.expect(item.id).to.be.a('number');",
+									"    pm.expect(item.title).to.be.a('string');",
+									"    pm.expect(item.body).to.be.a('string');",
+									"    pm.expect(item.userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id 为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-002 获取单篇文章",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/posts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('body');",
+									"    pm.expect(data).to.have.property('userId');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.body).to.be.a('string');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('id 值正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-003 获取不存在的文章(404)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/posts/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts",
+								"99999"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('响应体为空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('响应体无数据字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-004 创建新文章",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/posts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"{{random_title}}\",\n  \"body\": \"通过 Postman 创建的测试文章\",\n  \"userId\": 1\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"const randomTitle = `title_${Date.now()}`;",
+									"pm.environment.set('random_title', randomTitle);"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('body');",
+									"    pm.expect(data).to.have.property('userId');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.body).to.be.a('string');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('返回的 id=101', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(101);",
+									"});",
+									"pm.test('title 为随机生成的值', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.include('title_');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-005 分页获取文章(_start&_limit)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/posts?_start=0&_limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts"
+							],
+							"query": [
+								{
+									"key": "_start",
+									"value": "0"
+								},
+								{
+									"key": "_limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数组', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.at.most(10);",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('每条记录包含必要字段且类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.id).to.be.a('number');",
+									"        pm.expect(item.title).to.be.a('string');",
+									"        pm.expect(item.userId).to.be.a('number');",
+									"    });",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id=1 (从头开始)', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-006 全量更新文章(PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/posts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"title\": \"更新后的标题\",\n  \"body\": \"更新后的内容\",\n  \"userId\": 1\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('body');",
+									"    pm.expect(data).to.have.property('userId');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.body).to.be.a('string');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('title 已更新', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('更新后的标题');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-007 部分更新文章(PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/posts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"仅更新标题\"\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含 title 字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('title');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('title 类型为 string', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('title 已更新为 '仅更新标题'', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('仅更新标题');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-008 删除文章",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/posts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据为对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('返回空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-POST-009 获取文章的评论(嵌套)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/posts/1/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"posts",
+								"1",
+								"comments"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('postId');",
+									"    pm.expect(data[0]).to.have.property('name');",
+									"    pm.expect(data[0]).to.have.property('email');",
+									"    pm.expect(data[0]).to.have.property('body');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('postId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].postId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 postId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.postId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"description": "评论接口测试",
+			"item": [
+				{
+					"name": "TC-COM-001 获取全部评论",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验 - 必要字段存在性",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    data.slice(0, 5).forEach(function (item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('postId');",
+									"        pm.expect(item).to.have.property('name');",
+									"        pm.expect(item).to.have.property('email');",
+									"        pm.expect(item).to.have.property('body');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(500);",
+									"    const item = data[0];",
+									"    pm.expect(item.id).to.be.a('number');",
+									"    pm.expect(item.postId).to.be.a('number');",
+									"    pm.expect(item.name).to.be.a('string');",
+									"    pm.expect(item.email).to.be.a('string');",
+									"    pm.expect(item.body).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id 为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-COM-002 获取单条评论",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('postId');",
+									"    pm.expect(data).to.have.property('name');",
+									"    pm.expect(data).to.have.property('email');",
+									"    pm.expect(data).to.have.property('body');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.postId).to.be.a('number');",
+									"    pm.expect(data.name).to.be.a('string');",
+									"    pm.expect(data.email).to.be.a('string');",
+									"    pm.expect(data.body).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('id 值正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-COM-003 获取不存在的评论(404)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"99999"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('响应体为空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('响应体无数据字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-COM-004 分页获取评论(_page&_limit)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments?_page=1&_limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							],
+							"query": [
+								{
+									"key": "_page",
+									"value": "1"
+								},
+								{
+									"key": "_limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数组', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.at.most(10);",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('每条记录包含必要字段且类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.id).to.be.a('number');",
+									"        pm.expect(item.title).to.be.a('string');",
+									"        pm.expect(item.userId).to.be.a('number');",
+									"    });",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id=1 (从头开始)', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-COM-005 按 postId 过滤评论",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments?postId=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							],
+							"query": [
+								{
+									"key": "postId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('postId');",
+									"    pm.expect(data[0]).to.have.property('name');",
+									"    pm.expect(data[0]).to.have.property('email');",
+									"    pm.expect(data[0]).to.have.property('body');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('postId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].postId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 postId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.postId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-COM-006 按不存在的 postId 过滤(空数组)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments?postId=99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							],
+							"query": [
+								{
+									"key": "postId",
+									"value": "99999"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('返回空数组', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(0);",
+									"});",
+									"",
+									"pm.test('数组元素类型正确(空)', function () {",
+									"    pm.expect(pm.response.json()).to.be.an('array').that.is.empty;",
+									"});",
+									"",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Albums",
+			"description": "相册接口测试",
+			"item": [
+				{
+					"name": "TC-ALB-001 获取全部相册",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/albums",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验 - 必要字段存在性",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    data.slice(0, 5).forEach(function (item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('userId');",
+									"        pm.expect(item).to.have.property('title');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(100);",
+									"    const item = data[0];",
+									"    pm.expect(item.id).to.be.a('number');",
+									"    pm.expect(item.userId).to.be.a('number');",
+									"    pm.expect(item.title).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id 为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-002 获取单个相册",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/albums/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('userId');",
+									"    pm.expect(data).to.have.property('title');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('id 值正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-003 获取不存在的相册(404)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/albums/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums",
+								"99999"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('响应体为空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('响应体无数据字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-004 创建新相册",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/albums",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"{{random_title}}\",\n  \"userId\": 1\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"const randomTitle = `title_${Date.now()}`;",
+									"pm.environment.set('random_title', randomTitle);"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('userId');",
+									"    pm.expect(data).to.have.property('title');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('返回的 id=101', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(101);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-005 全量更新相册(PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/albums/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums",
+								"1"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"title\": \"更新后的相册\",\n  \"userId\": 1\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('userId');",
+									"    pm.expect(data).to.have.property('title');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('title 已更新', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('更新后的相册');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-006 部分更新相册(PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/albums/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums",
+								"1"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"仅更新标题\"\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含 title 字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('title');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('title 类型为 string', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('title 已更新为 '仅更新标题'', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('仅更新标题');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-007 删除相册",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/albums/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据为对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('返回空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-ALB-008 获取相册的照片(嵌套)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/albums/1/photos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"albums",
+								"1",
+								"photos"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('albumId');",
+									"    pm.expect(data[0]).to.have.property('title');",
+									"    pm.expect(data[0]).to.have.property('url');",
+									"    pm.expect(data[0]).to.have.property('thumbnailUrl');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('albumId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].albumId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 albumId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.albumId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Photos",
+			"description": "照片接口测试",
+			"item": [
+				{
+					"name": "TC-PHO-001 获取全部照片",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/photos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"photos"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验 - 必要字段存在性",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    data.slice(0, 5).forEach(function (item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('albumId');",
+									"        pm.expect(item).to.have.property('title');",
+									"        pm.expect(item).to.have.property('url');",
+									"        pm.expect(item).to.have.property('thumbnailUrl');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(5000);",
+									"    const item = data[0];",
+									"    pm.expect(item.id).to.be.a('number');",
+									"    pm.expect(item.albumId).to.be.a('number');",
+									"    pm.expect(item.title).to.be.a('string');",
+									"    pm.expect(item.url).to.be.a('string');",
+									"    pm.expect(item.thumbnailUrl).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id 为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-PHO-002 获取单张照片",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/photos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"photos",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('albumId');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('url');",
+									"    pm.expect(data).to.have.property('thumbnailUrl');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.albumId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.url).to.be.a('string');",
+									"    pm.expect(data.thumbnailUrl).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('id 值正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"});",
+									"",
+									"pm.test('url 为合法格式', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.url).to.match(/^https?:\\/\\//);",
+									"    pm.expect(data.thumbnailUrl).to.match(/^https?:\\/\\//);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-PHO-003 获取不存在的照片(404)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/photos/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"photos",
+								"99999"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('响应体为空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('响应体无数据字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-PHO-004 分页获取照片(_page&_limit)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/photos?_page=1&_limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"photos"
+							],
+							"query": [
+								{
+									"key": "_page",
+									"value": "1"
+								},
+								{
+									"key": "_limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数组', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.at.most(10);",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('每条记录包含必要字段且类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.id).to.be.a('number');",
+									"        pm.expect(item.title).to.be.a('string');",
+									"        pm.expect(item.userId).to.be.a('number');",
+									"    });",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id=1 (从头开始)', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-PHO-005 按 albumId 过滤照片",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/photos?albumId=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"photos"
+							],
+							"query": [
+								{
+									"key": "albumId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('albumId');",
+									"    pm.expect(data[0]).to.have.property('title');",
+									"    pm.expect(data[0]).to.have.property('url');",
+									"    pm.expect(data[0]).to.have.property('thumbnailUrl');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('albumId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].albumId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 albumId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.albumId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Todos",
+			"description": "待办接口测试",
+			"item": [
+				{
+					"name": "TC-TOD-001 获取全部待办",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/todos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验 - 必要字段存在性",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    data.slice(0, 5).forEach(function (item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('userId');",
+									"        pm.expect(item).to.have.property('title');",
+									"        pm.expect(item).to.have.property('completed');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(200);",
+									"    const item = data[0];",
+									"    pm.expect(item.id).to.be.a('number');",
+									"    pm.expect(item.userId).to.be.a('number');",
+									"    pm.expect(item.title).to.be.a('string');",
+									"    pm.expect(item.completed).to.be.a('boolean');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id 为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-002 获取单个待办",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/todos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('userId');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('completed');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.completed).to.be.a('boolean');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('id 值正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-003 获取不存在的待办(404)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/todos/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos",
+								"99999"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('响应体为空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('响应体无数据字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-004 创建新待办",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/todos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": 1,\n  \"title\": \"{{random_title}}\",\n  \"completed\": false\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "pre-request",
+							"script": {
+								"exec": [
+									"const randomTitle = `title_${Date.now()}`;",
+									"pm.environment.set('random_title', randomTitle);"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('userId');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('completed');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.completed).to.be.a('boolean');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('返回的 id=201', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(201);",
+									"});",
+									"pm.test('completed 为 false', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.completed).to.be.false;",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-005 按 userId 过滤待办",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/todos?userId=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('userId');",
+									"    pm.expect(data[0]).to.have.property('title');",
+									"    pm.expect(data[0]).to.have.property('completed');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('userId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 userId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.userId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-006 全量更新待办(PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/todos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos",
+								"1"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"title\": \"更新后的待办\",\n  \"completed\": true,\n  \"userId\": 1\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('userId');",
+									"    pm.expect(data).to.have.property('title');",
+									"    pm.expect(data).to.have.property('completed');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.userId).to.be.a('number');",
+									"    pm.expect(data.title).to.be.a('string');",
+									"    pm.expect(data.completed).to.be.a('boolean');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('title 已更新', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('更新后的待办');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-007 部分更新-标记完成(PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/todos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos",
+								"1"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"completed\": true\n}"
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含 completed 字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('completed');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('completed 类型为 boolean', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.completed).to.be.a('boolean');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('completed 已更新为 true', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.completed).to.eql(true);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-TOD-008 删除待办",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/todos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"todos",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据为对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('返回空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": "用户接口测试",
+			"item": [
+				{
+					"name": "TC-USR-001 获取全部用户",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验 - 必要字段存在性",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    data.slice(0, 5).forEach(function (item) {",
+									"        pm.expect(item).to.have.property('id');",
+									"        pm.expect(item).to.have.property('name');",
+									"        pm.expect(item).to.have.property('username');",
+									"        pm.expect(item).to.have.property('email');",
+									"        pm.expect(item).to.have.property('phone');",
+									"        pm.expect(item).to.have.property('website');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data).to.have.lengthOf(10);",
+									"    const item = data[0];",
+									"    pm.expect(item.id).to.be.a('number');",
+									"    pm.expect(item.name).to.be.a('string');",
+									"    pm.expect(item.username).to.be.a('string');",
+									"    pm.expect(item.email).to.be.a('string');",
+									"    pm.expect(item.phone).to.be.a('string');",
+									"    pm.expect(item.website).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('第一条记录 id 为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].id).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-USR-002 获取单个用户",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('返回数据包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('name');",
+									"    pm.expect(data).to.have.property('username');",
+									"    pm.expect(data).to.have.property('email');",
+									"    pm.expect(data).to.have.property('phone');",
+									"    pm.expect(data).to.have.property('website');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('字段数据类型正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.be.a('number');",
+									"    pm.expect(data.name).to.be.a('string');",
+									"    pm.expect(data.username).to.be.a('string');",
+									"    pm.expect(data.email).to.be.a('string');",
+									"    pm.expect(data.phone).to.be.a('string');",
+									"    pm.expect(data.website).to.be.a('string');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('id 值正确', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"});",
+									"",
+									"pm.test('嵌套对象 address 存在', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.address).to.have.property('street');",
+									"    pm.expect(data.address).to.have.property('city');",
+									"    pm.expect(data.address).to.have.property('geo');",
+									"    pm.expect(data.address.geo).to.have.property('lat');",
+									"    pm.expect(data.address.geo).to.have.property('lng');",
+									"});",
+									"",
+									"pm.test('嵌套对象 company 存在', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.company).to.have.property('name');",
+									"    pm.expect(data.company).to.have.property('catchPhrase');",
+									"    pm.expect(data.company).to.have.property('bs');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-USR-003 获取不存在的用户(404)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"99999"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('响应体为空对象', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('object');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('响应体无数据字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(Object.keys(data)).to.have.lengthOf(0);",
+									"});",
+									"",
+									"// (d) 响应时间校验",
+									"pm.test('响应时间合理', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.a('number');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-USR-004 email 格式校验",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含 email 字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    data.forEach(function (user) {",
+									"        pm.expect(user).to.have.property('email');",
+									"    });",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('email 为 string 类型', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (user) {",
+									"        pm.expect(user.email).to.be.a('string');",
+									"    });",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有用户 email 格式正确', function () {",
+									"    const data = pm.response.json();",
+									"    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;",
+									"    data.forEach(function (user) {",
+									"        pm.expect(user.email).to.match(emailRegex);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-XRES-001 用户的文章列表(嵌套)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1/posts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"posts"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('userId');",
+									"    pm.expect(data[0]).to.have.property('title');",
+									"    pm.expect(data[0]).to.have.property('body');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('userId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 userId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.userId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-XRES-002 用户的相册列表(嵌套)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1/albums",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"albums"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('userId');",
+									"    pm.expect(data[0]).to.have.property('title');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('userId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 userId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.userId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "TC-XRES-003 用户的待办列表(嵌套)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1/todos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"todos"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// (a) 状态码校验",
+									"pm.test('状态码为 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// (b) 响应结构校验",
+									"pm.test('每条记录包含必要字段', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data[0]).to.have.property('userId');",
+									"    pm.expect(data[0]).to.have.property('title');",
+									"    pm.expect(data[0]).to.have.property('completed');",
+									"});",
+									"",
+									"// (c) 数据类型校验",
+									"pm.test('userId 类型为 number', function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data[0].userId).to.be.a('number');",
+									"});",
+									"",
+									"// (d) 字段值校验",
+									"pm.test('所有记录 userId=1', function () {",
+									"    const data = pm.response.json();",
+									"    data.forEach(function (item) {",
+									"        pm.expect(item.userId).to.eql(1);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
