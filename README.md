@@ -128,7 +128,7 @@ cd JSONPlaceholder-API-Testing
 ## 联系方式
 
 如有问题或建议，请通过以下方式联系：
-- 邮箱: alam77777@qq.com
+- 邮箱: alam77777@163.com
 
 ## 致谢
 
